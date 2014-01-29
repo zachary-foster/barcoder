@@ -176,7 +176,7 @@ add.vertex.shape("fcircle",
                  plot=mycircle, 
                  parameters=list(vertex.frame.color=1, vertex.frame.width=1))
 
-max_tm_difference <- 10
+max_tm_difference <- 0
 minimum_proportion_detected <- 0.5
 @
 
@@ -348,7 +348,7 @@ names(primer_pair_data) <- c("name_1", "name_2", "sequence_1", "sequence_2")
 
 #Filter out primer combinations with too large a difference in Tm
 primer_pair_data$tm_difference <- abs(primer_data$tm[primer_pair_data$name_1] - primer_data$tm[primer_pair_data$name_2])
-primer_pair_data <- primer_pair_data[primer_pair_data$tm_difference <= max_tm_difference, ]
+primer_pair_data <- droplevels(primer_pair_data[primer_pair_data$tm_difference <= max_tm_difference, ])
 
 #write primersearch input file
 primersearch_input_path <- file.path(output_path, primersearch_input_path_name)
