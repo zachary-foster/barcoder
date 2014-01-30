@@ -67,6 +67,4 @@ read_chunk('functions.R')
 sessionInfo()
 @
 
-
-
 \end{document}
