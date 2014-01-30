@@ -1,7 +1,71 @@
 \documentclass{article}
 
+\usepackage[margin=0.3in]{geometry}
+\usepackage{datetime}
+
+\title{Analysis report for Barcoder.Rnw}
+\author{Zachary Foster}
+\date{\today,\ \currenttime}
+
+<<setup, include=FALSE>>=
+# set global chunk options
+opts_chunk$set(fig.align='center', 
+               fig.show='asis', 
+               fig.lp="", 
+               error=FALSE, 
+               cach=FALSE, 
+               dpi=600, 
+               include=FALSE, 
+               echo=FALSE, 
+               tidy=TRUE, 
+               out.width=".9\\linewidth", 
+               fig.width = 8, 
+               external=FALSE, 
+               results='markup',
+               message=FALSE)
+opts_knit$set(self.contained=FALSE)
+read_chunk('barcoder.R')
+read_chunk('constants.R')
+read_chunk('functions.R')
+@
+
+
 \begin{document}
 
+
+\maketitle
+
+<<imports, external=TRUE>>=
+@
+
+<<argument_parsing, external=TRUE>>=
+@
+
+\section{Execution Information}
+
+\subsection{Arguments}
+\textbf{File path to sequence database:}
+\Sexpr{latex_format(arguments[["database"]])}
+\\[3ex]
+\textbf{File path to primer sequence file:}
+\Sexpr{latex_format(arguments[["primers"]])}
+\\[3ex]
+\textbf{Output stored in:}
+\Sexpr{latex_format(arguments[["output"]])}
+\\[3ex]
+\textbf{Primersearch mismatch tolerated:} \Sexpr{latexTranslate(arguments["mismatch"])}\%
+
+\subsection{Constant Parameters}
+<<filtering_parameters, echo=TRUE, include=TRUE>>=
+@
+
+
+
+\section{Script information}
+\subsection{Dependency Information }
+<<package_information, include=TRUE>>=
+sessionInfo()
+@
 
 
 
