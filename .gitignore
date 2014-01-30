@@ -3,3 +3,6 @@
 .RData
 figure/*
 *.tex
+*.pdf
+*.log
+*.synctex.gz

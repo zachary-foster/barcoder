@@ -176,14 +176,14 @@ add.vertex.shape("fcircle",
                  plot=mycircle, 
                  parameters=list(vertex.frame.color=1, vertex.frame.width=1))
 
-max_tm_difference <- 0
+max_tm_difference <- 5
 minimum_proportion_detected <- 0.5
 @
 
 <<argument_parsing>>=
 #arguments <- commandArgs(TRUE)
 arguments <- c("/home/local/USDA-ARS/fosterz/ITS_analysis/PR2_database/refseq_gb-191_head1000.fasta",
-               "/home/local/USDA-ARS/fosterz/ITS_analysis/adl_2014_protist_SSU_primers.fasta",
+               "/home/local/USDA-ARS/fosterz/ITS_analysis/SSU_primers.fasta",
                "/home/local/USDA-ARS/fosterz/ITS_analysis",
                "0")
 names(arguments) <- c("database", "primers", "output", "mismatch")
