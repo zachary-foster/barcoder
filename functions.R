@@ -30,7 +30,6 @@ list_to_DNAbin <- function(sequences, seq_names) {
 }
 
 
-
 ## ---- generic_functions ----
 melting_temperature <- function(primer_sequence) {
   short_calculation <- function(sequence) {
@@ -65,4 +64,12 @@ list_to_array <- function(the_list) {
         dimnames=list(row.names(the_list[[1]]), 
                       colnames(the_list[[1]]), 
                       names(the_list)))
+}
+
+get_edge_parents <-function(graph) {
+  get.edges(taxonomy_graph, 1:ecount(taxonomy_graph))[,1]
+}
+
+get_edge_children <- function(graph) {
+  get.edges(taxonomy_graph, 1:ecount(taxonomy_graph))[,2]
 }

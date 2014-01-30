@@ -29,9 +29,7 @@ read_chunk('constants.R')
 read_chunk('functions.R')
 @
 
-
 \begin{document}
-
 
 \maketitle
 
@@ -41,6 +39,124 @@ read_chunk('functions.R')
 <<argument_parsing, external=TRUE>>=
 @
 
+<<import_reference_database, external=TRUE>>=
+@
+
+\section{Reference sequence database information}
+
+<<"reference_length_histogram", fig.height=4, fig.cap="Reference database sequence length distribution", include=TRUE>>=
+qplot(length, data=sequence_data, geom="histogram", binwidth=20)
+@
+
+<<results='asis', include=TRUE>>=
+taxon_level_data <- data.frame(count=apply(sequence_data[,taxonomy_hierarchy], 
+                                           MARGIN=2, 
+                                           function(x) length(unique(x))))
+taxon_counts <- lapply(taxonomy_hierarchy, function(x) as.numeric(table(sequence_data[,x])))
+taxon_level_data$'average count/taxon' <- sapply(taxon_counts, mean)
+xtable(taxon_level_data)
+@
+
+<<count_per_taxon, fig.height=5, include=TRUE, fig.cap="The number of sequences in the reference database in each taxon, for each taxonomic level.">>=
+names(taxon_counts) <- taxonomy_hierarchy
+taxon_counts <- stack(taxon_counts)
+taxon_counts$ind <- factor(taxon_counts$ind, levels=taxonomy_hierarchy)
+colnames(taxon_counts) <- c("count", "level")
+qplot(level, count + .5, data = taxon_counts, geom = "boxplot", log="y")
+histogram_plot <- ggplot(taxon_counts, aes(x=count))
+histogram_plot + geom_histogram(binwidth=1) + facet_wrap(~level, scales="free") + xlim(1, 100)
+@
+
+<<reference_taxonomy_full, fig.height=8, dev='png', include = TRUE, fig.cap="The taxonomy of reference database used. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons with count proportions in the top 100 were labeled.">>=
+labels <- sapply(strsplit(V(taxonomy_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+labels[-rev(order(V(taxonomy_graph)$size))[1:100]] <- ''
+plot(taxonomy_graph, 
+     layout=taxonomy_graph_layout,  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels)
+rm(labels)
+@
+
+<<reference_taxonomy_partial, fig.height=8, dev='png', include = TRUE, fig.cap="The taxonomy of reference database used. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons with count proportions in the top 200 were added.">>=
+top_verticies <- rev(order(V(taxonomy_graph)$size))[1:200]
+labels <- sapply(strsplit(V(taxonomy_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+subgraph <- induced.subgraph(taxonomy_graph, top_verticies)
+plot(subgraph,
+     layout=layout.reingold.tilford(subgraph, root = 1, circular = TRUE),  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels[top_verticies])
+rm(labels)
+rm(top_verticies)
+rm(subgraph)
+@
+
+<<primersearch, external=TRUE>>=
+@
+
+<<sensitivity_statistics, external=TRUE>>=
+@
+
+<<primer_pair_table, results='asis', include=TRUE>>=
+xtable(t(taxonomic_rank_proportions[,,1]), 
+       caption="The proportion of various taxa for which at least one reference sequence was matched for each primer pair.")
+@
+
+<<taxon_primer_pair_detection, fig.height=8, dev='png', include=TRUE, fig.cap="This graph compares the ability of primer pairs to detect taxa of each taxonomic level. The x axis is the minimum proportion of reference sequences within a taxon that a primer pair must match for the taxon to be considered detected. The y-axis is the proportion detected at this threshold.">>=
+flattened <- adply(taxonomic_rank_proportions,1:3)
+names(flattened) <- c("Level", "Primer_Pair", "Detection_Threshold", "Proportion_Detected")
+flattened$Detection_Threshold <- as.numeric(flattened$Detection_Threshold)
+ggplot(data=flattened, aes(x=Detection_Threshold, y=Proportion_Detected, group=Primer_Pair, colour=Primer_Pair)) + geom_line()  + facet_wrap(~Level)
+rm(flattened)
+@
+
+
+<<taxon_proportion_1, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by this primer pair. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+bad_proportions <- which(primer_proportions[,1] < .5)
+if (length(bad_proportions) > 30) {
+  top_verticies <- which(taxon_data$total_count[bad_proportions] > rev(sort(taxon_data$total_count[bad_proportions]))[30])
+} else {
+  top_verticies <- seq(1,length(bad_proportions))
+}
+bad_proportions <- bad_proportions[top_verticies]
+labels <- sapply(strsplit(V(taxonomy_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+labels[-bad_proportions] <- ''
+plot(taxonomy_graph,
+     layout=taxonomy_graph_layout,  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels,
+     vertex.color=mapply(add_alpha, 
+                         color.scale(primer_proportions[,1], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         alpha=V(taxonomy_graph)$alpha))
+rm(labels)
+rm(top_verticies)
+@
+
+<<sequence_filtering, external=TRUE, eval=FALSE>>=
+@
+
+<<distance_analysis, external=TRUE, eval=FALSE>>=
+@
+
+
+\clearpage
 \section{Execution Information}
 
 \subsection{Arguments}
@@ -60,7 +176,7 @@ read_chunk('functions.R')
 @
 
 
-
+\clearpage
 \section{Script information}
 \subsection{Dependency Information }
 <<package_information, include=TRUE>>=
