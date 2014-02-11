@@ -6,3 +6,17 @@ figure/*
 *.pdf
 *.log
 *.synctex.gz
+*.aux
+*.css
+*.idv
+*.html
+*.dvi
+*.lg
+*.tmp
+*.lyx
+*.4tc
+*.4ct
+*.xref
+*.sty
+html.
+barcoder.html.LyXconv

@@ -7,8 +7,9 @@
 \author{Zachary Foster}
 \date{\today,\ \currenttime}
 
-<<setup, include=FALSE>>=
+<<setup, include=FALSE, cache=FALSE>>=
 # set global chunk options
+render_listings()
 opts_chunk$set(fig.align='center', 
                fig.show='asis', 
                fig.lp="", 
