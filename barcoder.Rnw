@@ -70,7 +70,8 @@ histogram_plot + geom_histogram(binwidth=1) + facet_wrap(~level, scales="free") 
 
 <<reference_taxonomy_full, fig.height=8, dev='png', include = TRUE, fig.cap="The taxonomy of reference database used. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons with count proportions in the top 100 were labeled.">>=
 labels <- sapply(strsplit(V(taxonomy_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
-labels[-rev(order(V(taxonomy_graph)$size))[1:100]] <- ''
+if (length(V(taxonomy_graph)) < 100) max_index = length(V(taxonomy_graph)) else max_index = 100
+labels[-rev(order(V(taxonomy_graph)$size))[1:max_index]] <- ''
 plot(taxonomy_graph, 
      layout=taxonomy_graph_layout,  
      margin=0, 
@@ -85,7 +86,8 @@ rm(labels)
 @
 
 <<reference_taxonomy_partial, fig.height=8, dev='png', include = TRUE, fig.cap="The taxonomy of reference database used. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons with count proportions in the top 200 were added.">>=
-top_verticies <- rev(order(V(taxonomy_graph)$size))[1:200]
+if (length(V(taxonomy_graph)) < 200) max_index = length(V(taxonomy_graph)) else max_index = 200
+top_verticies <- rev(order(V(taxonomy_graph)$size))[1:max_index]
 labels <- sapply(strsplit(V(taxonomy_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
 subgraph <- induced.subgraph(taxonomy_graph, top_verticies)
 plot(subgraph,

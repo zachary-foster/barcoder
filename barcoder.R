@@ -18,8 +18,8 @@ source("constants.R")
 
 ## ---- argument_parsing ----
 #arguments <- commandArgs(TRUE)
-arguments <- c("/home/local/USDA-ARS/fosterz/ITS_analysis/PR2_database/refseq_gb-191_head1000.fasta",
-               "/home/local/USDA-ARS/fosterz/ITS_analysis/SSU_primers.fasta",
+arguments <- c("/home/local/USDA-ARS/fosterz/barcode_databases/refseq_gb-191.fasta",
+               "/home/local/USDA-ARS/fosterz/Notes/primers.txt",
                "/home/local/USDA-ARS/fosterz/ITS_analysis",
                "0")
 names(arguments) <- c("database", "primers", "output", "mismatch")
@@ -41,12 +41,16 @@ sequence_data$taxonomy <- sapply(split_name, function(x) paste(c(top_clade, x[2:
 sequence_data$taxonomy_tips <- unlist(lapply(strsplit(sequence_data$taxonomy, taxonomy_separator, fixed=TRUE), function(x) x[length(x)]))
 sequence_data$taxon_depth <- sapply(sequence_data$taxonomy, length)
 sequence_data$length <- nchar(as.character(sequence_data$sequence))
-sequence_data <- cbind(sequence_data, matrix(unlist(strsplit(sequence_data$taxonomy, taxonomy_separator, fixed = TRUE)), 
+taxonomy_info <- strsplit(sequence_data$taxonomy, taxonomy_separator, fixed = TRUE)
+filter <- sapply(taxonomy_info, FUN=function(x) length(x) == length(taxonomy_hierarchy) && !is.null(x[1:length(taxonomy_hierarchy)]))
+taxonomy_info <- taxonomy_info[filter]
+sequence_data <- sequence_data[filter, ]
+sequence_data <- cbind(sequence_data, matrix(unlist(taxonomy_info), 
                                              ncol=length(taxonomy_hierarchy), 
                                              byrow=TRUE, 
                                              dimnames=list(NULL, taxonomy_hierarchy)))
 rm(sequences)
-rm(split_name)
+rm(split_name) 
 rm(database)
 
 #construct taxonomy graph
@@ -98,7 +102,10 @@ write.dna(sequences,
 rm(sequences)
 
 #load input primers from fasta file
-primer_data <- data.frame(sequence=sapply(as.character(read.dna(arguments["primers"], format="fasta")), paste, collapse=''))
+#primer_data <- data.frame(sequence=sapply(as.character(read.dna(arguments["primers"], format="fasta")), paste, collapse=''))
+primer_data <- read.table(arguments["primers"], sep="\t", header=TRUE)
+row.names(primer_data) <- primer_data$row.name
+primer_data <- primer_data[, c("row.names", "sequence")]
 
 #Calculate primer Tm
 primer_data$tm <- melting_temperature(primer_data$sequence)
@@ -162,7 +169,7 @@ primersearch_data$reverse_mismatch <- as.numeric(sapply(strsplit(primersearch_ou
 primersearch_data$amplicon_length <- as.numeric(sapply(strsplit(primersearch_output[id_indexes + 4], " ", fixed=TRUE), 
                                                        function(x) x[3]))              
 primersearch_data$primer_pair <- as.factor(rep(primer_values, 
-                                               as.numeric(table(cut(id_indexes, c(primer_indexes, length(primersearch_output)))))))
+                                               as.numeric(table(cut(id_indexes, unique(c(primer_indexes, length(primersearch_output)+1)))))))
 primersearch_data <- cbind(primersearch_data, sequence_data[as.character(primersearch_data$id_values),taxonomy_hierarchy], row.names=NULL)
 
 

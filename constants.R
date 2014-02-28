@@ -1,5 +1,5 @@
 ## ---- filtering_parameters ----
-max_tm_difference <- 5
+max_tm_difference <- 10
 minimum_proportion_detected <- 0.5
 minimum_individual_per_species <- 2
 minimum_individual_per_taxonomic_level <- 3
@@ -71,5 +71,6 @@ color_pallette <- c("dodgerblue2","#E31A1C", # red
 
 ## ---- format_constants ----
 top_clade = "All"
-taxonomy_hierarchy <- c("life", "domain", "kingdom", "phylum", "class", "order", "family", "genus","species")
+taxonomy_hierarchy <- c("life", "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species")
+#taxonomy_hierarchy <- c("life", "domain", "kingdom", "phylum", "class", "order", "family", "genus")
 taxonomy_separator <- "|"
