@@ -1,8 +1,9 @@
 ## ---- filtering_parameters ----
-max_tm_difference <- 10
-minimum_proportion_detected <- 0.5
-minimum_individual_per_species <- 2
-minimum_individual_per_taxonomic_level <- 3
+max_tm_difference <- 20
+minimum_proportion_detected <- 0.1
+minimum_individual_per_species <- 1
+minimum_individual_per_taxonomic_level <- 1
+target_locus = "ALL"
 
 ## ---- file_system_constants ----
 primersearch_input_path_name <- 'primersearch_input.txt'
@@ -71,6 +72,6 @@ color_pallette <- c("dodgerblue2","#E31A1C", # red
 
 ## ---- format_constants ----
 top_clade = "All"
-taxonomy_hierarchy <- c("life", "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species")
-#taxonomy_hierarchy <- c("life", "domain", "kingdom", "phylum", "class", "order", "family", "genus")
+#taxonomy_hierarchy <- c("life", "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species")
+taxonomy_hierarchy <- c("life", "domain", "kingdom", "phylum", "class", "order", "family")
 taxonomy_separator <- "|"

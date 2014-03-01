@@ -18,7 +18,7 @@ source("constants.R")
 
 ## ---- argument_parsing ----
 #arguments <- commandArgs(TRUE)
-arguments <- c("/home/local/USDA-ARS/fosterz/barcode_databases/refseq_gb-191.fasta",
+arguments <- c("/home/local/USDA-ARS/fosterz/barcode_databases/pythium_saprolegnia_aphanomyces_18S_unfiltered.fasta",
                "/home/local/USDA-ARS/fosterz/Notes/primers.txt",
                "/home/local/USDA-ARS/fosterz/ITS_analysis",
                "0")
@@ -70,7 +70,7 @@ taxon_data$sequence_count <- tapply(sequence_data$taxonomy, list(sequence_data$t
 taxon_data$sequence_count[is.na(taxon_data$sequence_count)] <- 0
 
 #calculate the number of database sequences at each taxon as the sum of their subgroups
-taxon_data$total_count <- get_count(taxon_data, taxonomy_graph, 'sequence_count', max_taxon_depth)
+taxon_data$total_count <- get_count(taxon_data, taxonomy_graph, 'sequence_count', max_taxon_depth, 1:length(taxonomy_hierarchy))
 
 #set default graphing display parameters
 taxonomy_graph_layout <- layout.reingold.tilford(taxonomy_graph, root = 1, circular = TRUE)
@@ -105,7 +105,8 @@ rm(sequences)
 #primer_data <- data.frame(sequence=sapply(as.character(read.dna(arguments["primers"], format="fasta")), paste, collapse=''))
 primer_data <- read.table(arguments["primers"], sep="\t", header=TRUE)
 row.names(primer_data) <- primer_data$row.name
-primer_data <- primer_data[, c("row.names", "sequence")]
+if (target_locus != 'ALL') {primer_data <- droplevels(primer_data[primer_data$locus == target_locus,])}
+primer_data <- primer_data[, c("sequence"), drop=FALSE]
 
 #Calculate primer Tm
 primer_data$tm <- melting_temperature(primer_data$sequence)
@@ -173,6 +174,9 @@ primersearch_data$primer_pair <- as.factor(rep(primer_values,
 primersearch_data <- cbind(primersearch_data, sequence_data[as.character(primersearch_data$id_values),taxonomy_hierarchy], row.names=NULL)
 
 
+primersearch_data = primersearch_data[primersearch_data$amplicon_length > 150 & primersearch_data$amplicon_length < 1000,]
+
+if (nrow(primersearch_data) == 0) print("no suitable amplicons found.")
 ## ---- sensitivity_statistics ----  
 
 #calculate proportion of sequences detected by each primer pair
@@ -197,20 +201,20 @@ taxon_data$amplicon_count <- unordered_count[rownames(taxon_data)]
 taxon_data$amplicon_count[is.na(taxon_data$amplicon_count)] <- 0
 
 #calculate the number of amplicons at each taxon as the sum of their subgroups
-taxon_data$total_amplicon_count <- get_count(taxon_data, taxonomy_graph, 'amplicon_count', max_taxon_depth)
+taxon_data$total_amplicon_count <- get_count(taxon_data, taxonomy_graph, 'amplicon_count', max_taxon_depth, 1:length(taxonomy_hierarchy))
 
 #Calculate the number of amplicons at each taxon as for each primer set
-get_amplicon_count <- function(amplicons, data, graph, max_depth) {
+get_amplicon_count <- function(amplicons, data, graph, max_depth, taxonomy_hierarchy) {
   variable <- 'This_is_arbitrary'
   data[variable] <- 0
   unordered_count <- tapply(amplicons, INDEX=list(taxon=amplicons), FUN=length)
   data[variable] <- unordered_count[rownames(data)]
   data[is.na(data[variable]), variable] <- 0
-  return(get_count(data, graph, variable, max_depth))
+  return(get_count(data, graph, variable, max_depth, taxonomy_hierarchy))
 }
 primer_counts <- data.frame(c(by(data=primersearch_data$taxon_values, 
                                  INDICES=list(primer_pair=primersearch_data$primer_pair), 
-                                 FUN=function(x) get_amplicon_count(x, taxon_data, taxonomy_graph, max_taxon_depth))))
+                                 FUN=function(x) get_amplicon_count(x, taxon_data, taxonomy_graph, max_taxon_depth, 1:length(taxonomy_hierarchy)))))
 rownames(primer_counts) <- rownames(taxon_data)
 
 #Calculate the proportion of taxons represented by amplicons 

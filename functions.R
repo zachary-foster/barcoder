@@ -9,13 +9,13 @@ taxon_edge_list <- function(taxonomy, separator) {
   edge_list[!duplicated(edge_list),]
 }
 
-get_count <- function(data, graph, variable, max_depth) {
+get_count <- function(data, graph, variable, max_depth, taxonomy) {
   total_count <- 'This_is_an_arbitrary_name'
   data[total_count] <- rep(NA, nrow(data))
-  data[data$depth == max_depth, total_count] <- data[data$depth == max_depth, variable]
+  data[data$depth == taxonomy[max_depth], total_count] <- data[data$depth == taxonomy[max_depth], variable]
   for (depth in seq(max_depth - 1, 1)) {
-    data[data$depth == depth, total_count] <- 
-      apply(data[data$depth == depth, c(variable, 'index')], MARGIN=1, 
+    data[data$depth == taxonomy[depth], total_count] <- 
+      apply(data[data$depth == taxonomy[depth], c(variable, 'index')], MARGIN=1, 
             function(x) x[[variable]] + sum(data[neighbors(graph,x[['index']]), total_count]))
   }
   return(data[[total_count]])

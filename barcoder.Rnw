@@ -116,6 +116,13 @@ xtable(t(taxonomic_rank_proportions[,,1]),
        caption="The proportion of various taxa for which at least one reference sequence was matched for each primer pair.")
 @
 
+<<amplicon_length_table, results='asis', include=TRUE>>=
+data = data.frame(Length=tapply(primersearch_data$amplicon_length, primersearch_data$primer_pair, mean))
+xtable(data, 
+       caption="The average length of amplicons for primer pairs.")
+@
+
+
 <<taxon_primer_pair_detection, fig.height=8, dev='png', include=TRUE, fig.cap="This graph compares the ability of primer pairs to detect taxa of each taxonomic level. The x axis is the minimum proportion of reference sequences within a taxon that a primer pair must match for the taxon to be considered detected. The y-axis is the proportion detected at this threshold.">>=
 flattened <- adply(taxonomic_rank_proportions,1:3)
 names(flattened) <- c("Level", "Primer_Pair", "Detection_Threshold", "Proportion_Detected")
