@@ -67,9 +67,9 @@ list_to_array <- function(the_list) {
 }
 
 get_edge_parents <-function(graph) {
-  get.edges(taxonomy_graph, 1:ecount(taxonomy_graph))[,1]
+  get.edges(graph, 1:ecount(graph))[,1]
 }
 
 get_edge_children <- function(graph) {
-  get.edges(taxonomy_graph, 1:ecount(taxonomy_graph))[,2]
+  get.edges(graph, 1:ecount(graph))[,2]
 }

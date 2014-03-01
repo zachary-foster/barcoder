@@ -18,10 +18,10 @@ source("constants.R")
 
 ## ---- argument_parsing ----
 #arguments <- commandArgs(TRUE)
-arguments <- c("/home/local/USDA-ARS/fosterz/barcode_databases/pythium_saprolegnia_aphanomyces_18S_unfiltered.fasta",
-               "/home/local/USDA-ARS/fosterz/Notes/primers.txt",
+arguments <- c("/home/local/USDA-ARS/fosterz/barcode_databases/genbank_18S_combined.fasta",
+               "/home/local/USDA-ARS/fosterz/Notes/oomycete_primers.txt",
                "/home/local/USDA-ARS/fosterz/ITS_analysis",
-               "0")
+               "10")
 names(arguments) <- c("database", "primers", "output", "mismatch")
 output_path <- file.path(arguments["output"], basename(file_path_sans_ext(arguments["primers"])))
 unlink(output_path, recursive=TRUE)
@@ -34,17 +34,30 @@ database <- read.dna(arguments["database"], format="fasta")
 
 #make sequence data frame
 sequences <- sapply(as.character(database), paste, collapse='')
+sequences <- sequences[unique(labels(sequences))]
 split_name <- strsplit(c(labels(sequences)), taxonomy_separator, fixed = TRUE)
 sequence_data <- data.frame(row.names=sapply(split_name, function(x) x[1]), 
                             sequence=as.character(unname(sequences)))
-sequence_data$taxonomy <- sapply(split_name, function(x) paste(c(top_clade, x[2:length(x)]), collapse=taxonomy_separator))
-sequence_data$taxonomy_tips <- unlist(lapply(strsplit(sequence_data$taxonomy, taxonomy_separator, fixed=TRUE), function(x) x[length(x)]))
-sequence_data$taxon_depth <- sapply(sequence_data$taxonomy, length)
 sequence_data$length <- nchar(as.character(sequence_data$sequence))
-taxonomy_info <- strsplit(sequence_data$taxonomy, taxonomy_separator, fixed = TRUE)
-filter <- sapply(taxonomy_info, FUN=function(x) length(x) == length(taxonomy_hierarchy) && !is.null(x[1:length(taxonomy_hierarchy)]))
-taxonomy_info <- taxonomy_info[filter]
-sequence_data <- sequence_data[filter, ]
+taxonomy_info <- strsplit(sapply(split_name, function(x) paste(c(top_clade, x[2:length(x)]), collapse=taxonomy_separator)), taxonomy_separator, fixed = TRUE)
+
+#sequence_data$taxonomy <- sapply(split_name, function(x) paste(c(top_clade, x[2:length(x)]), collapse=taxonomy_separator))
+#sequence_data$taxonomy_tips <- unlist(lapply(strsplit(sequence_data$taxonomy, taxonomy_separator, fixed=TRUE), function(x) x[length(x)]))
+#sequence_data$taxon_depth <- sapply(sequence_data$taxonomy, length)
+
+#filter <- sapply(taxonomy_info, FUN=function(x) length(x) >= length(taxonomy_hierarchy))
+#taxonomy_info <- taxonomy_info[filter]
+#taxonomy_info <- lapply(taxonomy_info, function(x) x[1:length(taxonomy_hierarchy)])
+#sequence_data <- sequence_data[filter, ]
+
+#add unknown taxa on ends to make taxonomy length even
+taxonomy_info <- lapply(taxonomy_info, function(x) if (length(x) < length(taxonomy_hierarchy)) c(x, paste(rep(x[length(x)], length(taxonomy_hierarchy) - length(x)), 1:(length(taxonomy_hierarchy) - length(x)), sep='_')) else x)
+#subtract excessive tip taxa
+taxonomy_info <- lapply(taxonomy_info, function(x) x[1:length(taxonomy_hierarchy)])
+
+sequence_data$taxonomy <- sapply(taxonomy_info, function(x) paste(x, collapse=taxonomy_separator))
+sequence_data$taxonomy_tips <- unlist(lapply(strsplit(sequence_data$taxonomy, taxonomy_separator, fixed=TRUE), function(x) x[length(x)]))
+sequence_data$taxon_depth <- sapply(taxonomy_info, length)
 sequence_data <- cbind(sequence_data, matrix(unlist(taxonomy_info), 
                                              ncol=length(taxonomy_hierarchy), 
                                              byrow=TRUE, 
@@ -52,6 +65,7 @@ sequence_data <- cbind(sequence_data, matrix(unlist(taxonomy_info),
 rm(sequences)
 rm(split_name) 
 rm(database)
+rm(taxonomy_info)
 
 #construct taxonomy graph
 taxonomy_graph <- graph.edgelist(taxon_edge_list(sequence_data$taxonomy, taxonomy_separator))
@@ -63,7 +77,7 @@ taxon_data$index <- c(V(taxonomy_graph))
 
 #store the distance of all taxons from the root
 taxon_data$depth <- sapply(get.shortest.paths(taxonomy_graph, from=taxon_root), length)
-max_taxon_depth <- max(taxon_data$depth)
+max_taxon_depth <- length(taxonomy_hierarchy)#max(taxon_data$depth)
 
 #store number of database sequences for each taxon defined at that level explicitly
 taxon_data$sequence_count <- tapply(sequence_data$taxonomy, list(sequence_data$taxonomy), length)[rownames(taxon_data)]
@@ -175,8 +189,8 @@ primersearch_data <- cbind(primersearch_data, sequence_data[as.character(primers
 
 
 primersearch_data = primersearch_data[primersearch_data$amplicon_length > 150 & primersearch_data$amplicon_length < 1000,]
-
 if (nrow(primersearch_data) == 0) print("no suitable amplicons found.")
+
 ## ---- sensitivity_statistics ----  
 
 #calculate proportion of sequences detected by each primer pair
@@ -187,7 +201,7 @@ primer_pair_data$proportion_detected <- primer_pair_data$amplicon_count/nrow(seq
 rm(counts)
 
 #Filter out primer pairs that have too little amplification
-passing_pairs <- row.names(primer_pair_data)[which(primer_pair_data$proportion_detected > minimum_proportion_detected)]
+passing_pairs <- row.names(primer_pair_data)[which(primer_pair_data$proportion_detected >= minimum_proportion_detected)]
 primer_pair_data <- droplevels(primer_pair_data[passing_pairs,])
 primersearch_data <- droplevels(primersearch_data[which(primersearch_data$primer_pair %in% passing_pairs), ])
 row.names(primersearch_data) = NULL
