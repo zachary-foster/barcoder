@@ -52,7 +52,33 @@ read_chunk('constants.R')
   \item \textbf{Initialize or validate output directory:} If the pipeline is being run for the first time an output directory will be made.
   Input files are copied into the output directory and a configuration file is made. 
   If an analysis is being continued or redone the state of the previously created output directory is checked for errors and reverted to its last valid state if possible. 
-  \item \textbf{Download reference database:} Downloads a set sequences from genbank using a file of genbanks ids or search terms.
+  \item \textbf{Initialize reference database:} Downloads a set sequences from genbank using a file of genbanks ids or search terms.
+  Alternativly, a generic reference database such as SILVA or PR2 could be downloaded.
+  The database is saved in a standardized format.
+  Graphs and data associated with the  database is saved.
+  \item \textbf{Generate reference database report:} A pdf report is made with data on the reference database. 
+  \item \textbf{Initial primer filtering:} Individual primers are filtered by traits like Tm or target taxon (i.e. traits that do not depend on pairing or amplification). 
+  A file containing the final set of individual primers (i.e. not pairs) is made at this point.
+  \item \textbf{Primer pairing and filtering:} Primers are paired in all possible combinations and the pairs of primers are filtered for things like Tm difference and the presence of secondary structure or dimers. 
+  A file containing the pairs for primers to be used in the following steps is created.
+  \item \textbf{Simulate PCR on reference database:} A file is produced containing every match of each primer pair to each sequence in the reference database.  
+  \item \textbf{Calculate amplification statistics:} Create files containing statsitics such as the proportion of each taxon amplified for each primer pair and the distribution of amplicon lengths.
+  Graphs of the data are saved as images or pdfs. 
+  \item \textbf{Generate amplificaton report:} Make a pdf report of the results of the amplification, focusing on all the primer pairs used. 
+  \item \textbf{Filter primer pairs by amplification:} Remove primer pairs from further analysis that do not meet quality standards. 
+  \item \textbf{Calculate metagenomic statistics:} Calulate statistics related to metagenomic analysis such as taxon-specific optimum clustering threshold and barcode gap. 
+  Graphs  of data are saved as images or pdfs. 
+  \item \textbf{Generate metagenomic statistic report:} A pdf report of the statistics like optimum clustering threshold is made, focusing on all primers tested. 
+  \item \textbf{Filter primer pairs by metagenomic statistics:} Remove primer pairs from further analysis that do not meet quality standards. 
+  \item \textbf{Generate top primer pair report:} A pdf report with detailed information on the best performing primer pairs.
+  Information for evey step in the pipeline will be included, but only for the top few primer pairs.
+  \item \textbf{Generate execution report:} A pdf report of information regarding the analysis pipeline as a whole.
+   Information such as the number of things filtered out at each step and computation statistics (e.g. run time, RAM used etc.)
+  \item \textbf{Generate complete report:} A pdf report compiled from all of the other reports. 
+
+
+ 
+  
 \end{enumerate}
 
 
