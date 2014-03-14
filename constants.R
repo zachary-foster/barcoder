@@ -1,3 +1,8 @@
+## ---- general_constants ----
+program_name = "Barcoder"
+program_version = "1.0"
+
+
 ## ---- filtering_parameters ----
 max_tm_difference <- 20
 minimum_proportion_detected <- 0.0

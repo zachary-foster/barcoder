@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[margin=2cm]{geometry}
+
+
+<<setup, include=FALSE>>=
+#R library imports
+library(knitr)
+library(xtable)
+library(Hmisc)
+
+# set global chunk options
+opts_chunk$set(fig.align='center', 
+               fig.show='asis', 
+               fig.lp="", 
+               error=FALSE, 
+               cach=FALSE, 
+               dpi=600, 
+               include=TRUE, 
+               echo=FALSE, 
+               tidy=TRUE, 
+               out.width=".9\\linewidth", 
+               fig.width = 8, 
+               external=FALSE, 
+               results='markup',
+               message=FALSE)
+read_chunk('constants.R')
+@
+
+<<general_constants, external=TRUE>>=
+@
+
+
+\title{Description of \Sexpr{capitalize(program_name)}  \Sexpr{program_version}}
+\author{Zachary Foster}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Outline of Program Structure}
+
+\begin{enumerate} 
+  \item \textbf{Initialize or validate output directory:} If the pipeline is being run for the first time an output directory will be made.
+  Input files are copied into the output directory and a configuration file is made. 
+  If an analysis is being continued or redone the state of the previously created output directory is checked for errors and reverted to its last valid state if possible. 
+  \item \textbf{Download reference database:} Downloads a set sequences from genbank using a file of genbanks ids or search terms.
+\end{enumerate}
+
+
+\end{document}

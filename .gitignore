@@ -20,3 +20,4 @@ figure/*
 *.sty
 html.
 barcoder.html.LyXconv
+*.png

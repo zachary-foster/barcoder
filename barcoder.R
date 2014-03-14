@@ -19,7 +19,7 @@ source("constants.R")
 ## ---- argument_parsing ----
 #arguments <- commandArgs(TRUE)
 arguments <- c("/home/local/USDA-ARS/fosterz/barcode_databases/genbank_18S_combined.fasta",
-               "/home/local/USDA-ARS/fosterz/Notes/oomycete_primers.txt",
+               "/home/local/USDA-ARS/fosterz/Notes/caroline_primers.txt",
                "/home/local/USDA-ARS/fosterz/ITS_analysis",
                "10")
 names(arguments) <- c("database", "primers", "output", "mismatch")
@@ -188,7 +188,7 @@ primersearch_data$primer_pair <- as.factor(rep(primer_values,
 primersearch_data <- cbind(primersearch_data, sequence_data[as.character(primersearch_data$id_values),taxonomy_hierarchy], row.names=NULL)
 
 
-primersearch_data = primersearch_data[primersearch_data$amplicon_length > 150 & primersearch_data$amplicon_length < 1000,]
+#primersearch_data = primersearch_data[primersearch_data$amplicon_length > 150 & primersearch_data$amplicon_length < 1000,]
 if (nrow(primersearch_data) == 0) print("no suitable amplicons found.")
 
 ## ---- sensitivity_statistics ----  

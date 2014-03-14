@@ -11,7 +11,7 @@
 # set global chunk options
 render_listings()
 opts_chunk$set(fig.align='center', 
-               fig.show='asis', 
+               fig.show='hold', 
                fig.lp="", 
                error=FALSE, 
                cach=FALSE, 
@@ -132,8 +132,8 @@ rm(flattened)
 @
 
 
-<<taxon_proportion_1, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by this primer pair. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
-bad_proportions <- which(primer_proportions[,1] < .5)
+<<taxon_proportion_1, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by 5.8S.1R + 18Ph2F. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+bad_proportions <- which(primer_proportions[,c("X5.8S.1R__18Ph2F")] < .5)
 if (length(bad_proportions) > 30) {
   top_verticies <- which(taxon_data$total_count[bad_proportions] > rev(sort(taxon_data$total_count[bad_proportions]))[30])
 } else {
@@ -153,14 +153,14 @@ plot(taxonomy_graph,
      vertex.frame.width=.06,
      vertex.label=labels,
      vertex.color=mapply(add_alpha, 
-                         color.scale(primer_proportions[,1], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         color.scale(primer_proportions[,c("X5.8S.1R__18Ph2F")], c(1,0,0), c(0,1,0), c(0,0,1)), 
                          alpha=V(taxonomy_graph)$alpha))
 rm(labels)
 rm(top_verticies)
 @
 
-<<taxon_proportion_2, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by this primer pair. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
-bad_proportions <- which(primer_proportions[,2] > .5)
+<<taxon_proportion_2, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by ITS6 + ITS7. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+bad_proportions <- which(primer_proportions[, c("ITS6__ITS7")] > .5)
 if (length(bad_proportions) > 30) {
   top_verticies <- which(taxon_data$total_count[bad_proportions] > rev(sort(taxon_data$total_count[bad_proportions]))[30])
 } else {
@@ -180,14 +180,14 @@ plot(taxonomy_graph,
      vertex.frame.width=.06,
      vertex.label=labels,
      vertex.color=mapply(add_alpha, 
-                         color.scale(primer_proportions[,2], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         color.scale(primer_proportions[, c("ITS6__ITS7")], c(1,0,0), c(0,1,0), c(0,0,1)), 
                          alpha=V(taxonomy_graph)$alpha))
 rm(labels)
 rm(top_verticies)
 @
 
-<<taxon_proportion_3, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by this primer pair. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
-bad_proportions <- which(primer_proportions[,3] > .5)
+<<taxon_proportion_3, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by 5.8S-1R + ITS6. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+bad_proportions <- which(primer_proportions[,c("X5.8S.1R__ITS6")] > .5)
 if (length(bad_proportions) > 30) {
   top_verticies <- which(taxon_data$total_count[bad_proportions] > rev(sort(taxon_data$total_count[bad_proportions]))[30])
 } else {
@@ -207,13 +207,67 @@ plot(taxonomy_graph,
      vertex.frame.width=.06,
      vertex.label=labels,
      vertex.color=mapply(add_alpha, 
-                         color.scale(primer_proportions[,3], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         color.scale(primer_proportions[,c("X5.8S.1R__ITS6")], c(1,0,0), c(0,1,0), c(0,0,1)), 
                          alpha=V(taxonomy_graph)$alpha))
 rm(labels)
 rm(top_verticies)
 @
 
-<<taxon_proportion_4, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by this primer pair. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+<<taxon_proportion_4, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by 5.8S-1R + ITS6. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+bad_proportions <- which(primer_proportions[,c("X18Ph2F__ITS7")] > .5)
+if (length(bad_proportions) > 30) {
+  top_verticies <- which(taxon_data$total_count[bad_proportions] > rev(sort(taxon_data$total_count[bad_proportions]))[30])
+} else {
+  top_verticies <- seq(1,length(bad_proportions))
+}
+bad_proportions <- bad_proportions[top_verticies]
+labels <- sapply(strsplit(V(taxonomy_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+labels[-bad_proportions] <- ''
+plot(taxonomy_graph,
+     layout=taxonomy_graph_layout,  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels,
+     vertex.color=mapply(add_alpha, 
+                         color.scale(primer_proportions[,c("X18Ph2F__ITS7")], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         alpha=V(taxonomy_graph)$alpha))
+rm(labels)
+rm(top_verticies)
+@
+
+<<taxon_proportion_10, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by ITS1 + OOM.LO5.8S47B. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+bad_proportions <- which(primer_proportions[,c("OOM.LO5.8S47B__ITS1")] > .5)
+if (length(bad_proportions) > 30) {
+  top_verticies <- which(taxon_data$total_count[bad_proportions] > rev(sort(taxon_data$total_count[bad_proportions]))[30])
+} else {
+  top_verticies <- seq(1,length(bad_proportions))
+}
+bad_proportions <- bad_proportions[top_verticies]
+labels <- sapply(strsplit(V(taxonomy_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+labels[-bad_proportions] <- ''
+plot(taxonomy_graph,
+     layout=taxonomy_graph_layout,  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels,
+     vertex.color=mapply(add_alpha, 
+                         color.scale(primer_proportions[,c("OOM.LO5.8S47B__ITS1")], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         alpha=V(taxonomy_graph)$alpha))
+rm(labels)
+rm(top_verticies)
+@
+
+<<taxon_proportion_5, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by 5.8S.1R + 18Ph2F. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
 stramenopile_taxonomy = V(taxonomy_graph)[children(taxonomy_graph, V(taxonomy_graph)["All|Eukaryota|Stramenopiles"])]
 stramenopile_graph <- graph.edgelist(taxon_edge_list(stramenopile_taxonomy$name, taxonomy_separator))
 taxon_root <- V(stramenopile_graph)[1]
@@ -245,11 +299,159 @@ plot(stramenopile_graph,
      vertex.frame.width=.06,
      vertex.label=labels,
      vertex.color=mapply(add_alpha, 
-                         color.scale(primer_proportions[taxon_subset,2], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         color.scale(primer_proportions[taxon_subset,c("X5.8S.1R__18Ph2F")], c(1,0,0), c(0,1,0), c(0,0,1)), 
                          alpha=V(stramenopile_graph)$alpha))
 rm(labels)
-rm(top_verticies)
 @
+
+<<taxon_proportion_6, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by ITS6 + ITS7. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+stramenopile_taxonomy = V(taxonomy_graph)[children(taxonomy_graph, V(taxonomy_graph)["All|Eukaryota|Stramenopiles"])]
+stramenopile_graph <- graph.edgelist(taxon_edge_list(stramenopile_taxonomy$name, taxonomy_separator))
+taxon_root <- V(stramenopile_graph)[1]
+
+taxon_subset = c(1, 2, as.numeric(stramenopile_taxonomy))
+stramenopile_graph_layout <- layout.reingold.tilford(stramenopile_graph, root = 1, circular = TRUE)
+V(stramenopile_graph)$size <- (log(taxon_data$total_count[taxon_subset] + .5) / max(log(taxon_data$total_count[taxon_subset]) + .5)) * 20
+V(stramenopile_graph)$label.cex <- V(stramenopile_graph)$size * .05 + .15
+V(stramenopile_graph)$label.color <- "black"
+V(stramenopile_graph)$color[order(V(stramenopile_graph)$name)] <- rainbow_hcl(length(V(stramenopile_graph)$name))
+V(stramenopile_graph)$alpha <- (max_taxon_depth*1.5 - as.numeric(taxon_data$depth[taxon_subset])) / (max_taxon_depth*1.5)
+V(stramenopile_graph)$color <- mapply(add_alpha, V(stramenopile_graph)$color, V(stramenopile_graph)$alpha)
+E(stramenopile_graph)$depth <- taxon_data$depth[get_edge_parents(stramenopile_graph)]
+max_edge_depth <- max(E(stramenopile_graph)$depth)
+E(stramenopile_graph)$width <- V(stramenopile_graph)$size[get_edge_children(stramenopile_graph)] * .4
+E(stramenopile_graph)$color <- sapply(((max_edge_depth*4 - E(stramenopile_graph)$depth) / (max_edge_depth*4)) * .3,
+                                  function(x) rgb(red=.3,green=.3,blue=.3,alpha=x))
+
+
+labels <- sapply(strsplit(V(stramenopile_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+plot(stramenopile_graph,
+     layout=stramenopile_graph_layout,  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels,
+     vertex.color=mapply(add_alpha, 
+                         color.scale(primer_proportions[taxon_subset,c("ITS6__ITS7")], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         alpha=V(stramenopile_graph)$alpha))
+rm(labels)
+@
+
+<<taxon_proportion_7, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by X5.8S.1R + ITS6. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+stramenopile_taxonomy = V(taxonomy_graph)[children(taxonomy_graph, V(taxonomy_graph)["All|Eukaryota|Stramenopiles"])]
+stramenopile_graph <- graph.edgelist(taxon_edge_list(stramenopile_taxonomy$name, taxonomy_separator))
+taxon_root <- V(stramenopile_graph)[1]
+
+taxon_subset = c(1, 2, as.numeric(stramenopile_taxonomy))
+stramenopile_graph_layout <- layout.reingold.tilford(stramenopile_graph, root = 1, circular = TRUE)
+V(stramenopile_graph)$size <- (log(taxon_data$total_count[taxon_subset] + .5) / max(log(taxon_data$total_count[taxon_subset]) + .5)) * 20
+V(stramenopile_graph)$label.cex <- V(stramenopile_graph)$size * .05 + .15
+V(stramenopile_graph)$label.color <- "black"
+V(stramenopile_graph)$color[order(V(stramenopile_graph)$name)] <- rainbow_hcl(length(V(stramenopile_graph)$name))
+V(stramenopile_graph)$alpha <- (max_taxon_depth*1.5 - as.numeric(taxon_data$depth[taxon_subset])) / (max_taxon_depth*1.5)
+V(stramenopile_graph)$color <- mapply(add_alpha, V(stramenopile_graph)$color, V(stramenopile_graph)$alpha)
+E(stramenopile_graph)$depth <- taxon_data$depth[get_edge_parents(stramenopile_graph)]
+max_edge_depth <- max(E(stramenopile_graph)$depth)
+E(stramenopile_graph)$width <- V(stramenopile_graph)$size[get_edge_children(stramenopile_graph)] * .4
+E(stramenopile_graph)$color <- sapply(((max_edge_depth*4 - E(stramenopile_graph)$depth) / (max_edge_depth*4)) * .3,
+                                  function(x) rgb(red=.3,green=.3,blue=.3,alpha=x))
+
+
+labels <- sapply(strsplit(V(stramenopile_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+plot(stramenopile_graph,
+     layout=stramenopile_graph_layout,  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels,
+     vertex.color=mapply(add_alpha, 
+                         color.scale(primer_proportions[taxon_subset,c("X5.8S.1R__ITS6")], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         alpha=V(stramenopile_graph)$alpha))
+rm(labels)
+@
+
+<<taxon_proportion_8, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by 18Ph2F + ITS7. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+stramenopile_taxonomy = V(taxonomy_graph)[children(taxonomy_graph, V(taxonomy_graph)["All|Eukaryota|Stramenopiles"])]
+stramenopile_graph <- graph.edgelist(taxon_edge_list(stramenopile_taxonomy$name, taxonomy_separator))
+taxon_root <- V(stramenopile_graph)[1]
+
+taxon_subset = c(1, 2, as.numeric(stramenopile_taxonomy))
+stramenopile_graph_layout <- layout.reingold.tilford(stramenopile_graph, root = 1, circular = TRUE)
+V(stramenopile_graph)$size <- (log(taxon_data$total_count[taxon_subset] + .5) / max(log(taxon_data$total_count[taxon_subset]) + .5)) * 20
+V(stramenopile_graph)$label.cex <- V(stramenopile_graph)$size * .05 + .15
+V(stramenopile_graph)$label.color <- "black"
+V(stramenopile_graph)$color[order(V(stramenopile_graph)$name)] <- rainbow_hcl(length(V(stramenopile_graph)$name))
+V(stramenopile_graph)$alpha <- (max_taxon_depth*1.5 - as.numeric(taxon_data$depth[taxon_subset])) / (max_taxon_depth*1.5)
+V(stramenopile_graph)$color <- mapply(add_alpha, V(stramenopile_graph)$color, V(stramenopile_graph)$alpha)
+E(stramenopile_graph)$depth <- taxon_data$depth[get_edge_parents(stramenopile_graph)]
+max_edge_depth <- max(E(stramenopile_graph)$depth)
+E(stramenopile_graph)$width <- V(stramenopile_graph)$size[get_edge_children(stramenopile_graph)] * .4
+E(stramenopile_graph)$color <- sapply(((max_edge_depth*4 - E(stramenopile_graph)$depth) / (max_edge_depth*4)) * .3,
+                                  function(x) rgb(red=.3,green=.3,blue=.3,alpha=x))
+
+
+labels <- sapply(strsplit(V(stramenopile_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+plot(stramenopile_graph,
+     layout=stramenopile_graph_layout,  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels,
+     vertex.color=mapply(add_alpha, 
+                         color.scale(primer_proportions[taxon_subset,c("X18Ph2F__ITS7")], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         alpha=V(stramenopile_graph)$alpha))
+rm(labels)
+@
+
+<<taxon_proportion_9, fig.height=8, dev='png', include=TRUE, fig.cap="The proportion of each taxon detected by ITS1 + OOM.LO5.8S47B. The size of verticies indicate the proportion of the total sequences represented by each taxon. The thickness of the edges correspond to the taxonomic level of the source vertex. Only the names of taxons major taxa with low scores are labeled.">>=
+stramenopile_taxonomy = V(taxonomy_graph)[children(taxonomy_graph, V(taxonomy_graph)["All|Eukaryota|Stramenopiles"])]
+stramenopile_graph <- graph.edgelist(taxon_edge_list(stramenopile_taxonomy$name, taxonomy_separator))
+taxon_root <- V(stramenopile_graph)[1]
+
+taxon_subset = c(1, 2, as.numeric(stramenopile_taxonomy))
+stramenopile_graph_layout <- layout.reingold.tilford(stramenopile_graph, root = 1, circular = TRUE)
+V(stramenopile_graph)$size <- (log(taxon_data$total_count[taxon_subset] + .5) / max(log(taxon_data$total_count[taxon_subset]) + .5)) * 20
+V(stramenopile_graph)$label.cex <- V(stramenopile_graph)$size * .05 + .15
+V(stramenopile_graph)$label.color <- "black"
+V(stramenopile_graph)$color[order(V(stramenopile_graph)$name)] <- rainbow_hcl(length(V(stramenopile_graph)$name))
+V(stramenopile_graph)$alpha <- (max_taxon_depth*1.5 - as.numeric(taxon_data$depth[taxon_subset])) / (max_taxon_depth*1.5)
+V(stramenopile_graph)$color <- mapply(add_alpha, V(stramenopile_graph)$color, V(stramenopile_graph)$alpha)
+E(stramenopile_graph)$depth <- taxon_data$depth[get_edge_parents(stramenopile_graph)]
+max_edge_depth <- max(E(stramenopile_graph)$depth)
+E(stramenopile_graph)$width <- V(stramenopile_graph)$size[get_edge_children(stramenopile_graph)] * .4
+E(stramenopile_graph)$color <- sapply(((max_edge_depth*4 - E(stramenopile_graph)$depth) / (max_edge_depth*4)) * .3,
+                                  function(x) rgb(red=.3,green=.3,blue=.3,alpha=x))
+
+
+labels <- sapply(strsplit(V(stramenopile_graph)$name, taxonomy_separator, fixed = TRUE), function(x) x[length(x)])
+plot(stramenopile_graph,
+     layout=stramenopile_graph_layout,  
+     margin=0, 
+     vertex.label.dist=0,
+     vertex.label.degree=0,
+     edge.arrow.size =0,
+     vertex.shape="fcircle", 
+     vertex.frame.color='black',
+     vertex.frame.width=.06,
+     vertex.label=labels,
+     vertex.color=mapply(add_alpha, 
+                         color.scale(primer_proportions[taxon_subset,c("OOM.LO5.8S47B__ITS1")], c(1,0,0), c(0,1,0), c(0,0,1)), 
+                         alpha=V(stramenopile_graph)$alpha))
+rm(labels)
+@
+
 
 <<sequence_filtering, external=TRUE, eval=FALSE>>=
 @
